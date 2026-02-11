@@ -53,48 +53,106 @@ function init() {
     loader.load('/Modelo/scene.gltf', function (gltf) {
         carModel = gltf.scene;
 
-        // Clean up model: Remove Text and loose geometry that might be clutter
-        const toRemove = [];
+        // ADVANCED CLEANUP: Find the largest object (The Car) and hide everything else.
+        let largestMesh = null;
+        let maxVolume = 0;
+
+        // 1. Calculate bounding boxes for all meshes to find the biggest one
         carModel.traverse((child) => {
-            if (child.name.includes('Text') || child.name.includes('Cube')) {
-                // Inspecting the gltf, there were many 'Cube' and 'Text' nodes. 
-                // If the user wants JUST the car, we might need to be careful.
-                // Let's hide Text for sure.
-            }
-            if (child.name.includes('Text')) {
-                toRemove.push(child);
-            }
-            // Enable shadows
             if (child.isMesh) {
+                // Enable shadows while we are at it
                 child.castShadow = true;
                 child.receiveShadow = true;
+
+                // Calculate volume
+                const box = new THREE.Box3().setFromObject(child);
+                const size = box.getSize(new THREE.Vector3());
+                const volume = size.x * size.y * size.z;
+
+                // Ignore huge flat planes (like floors) if any, but usually car is "fat"
+                if (volume > maxVolume) {
+                    maxVolume = volume;
+                    largestMesh = child;
+                }
             }
         });
 
-        toRemove.forEach(child => child.parent.remove(child));
+        if (largestMesh) {
+            console.log("Found largest mesh:", largestMesh.name);
 
-        // Auto-center and scale
-        const box = new THREE.Box3().setFromObject(carModel);
-        const size = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
+            // 2. Hide everything
+            carModel.traverse((child) => {
+                if (child.isMesh) child.visible = false;
+            });
 
-        // Normalize scale to approx 4 meters (cars are bigger than 2m usually)
-        const maxDim = Math.max(size.x, size.y, size.z);
-        let scale = 4.0 / maxDim;
+            // 3. Show only the largest mesh and its children/parents if needed?
+            // Actually, cars are often multiple meshes (wheels + body). 
+            // We probably want to keep the "Group" that contains the largest mesh.
 
-        // If the model is wierdly small/large, adjust.
-        if (!isFinite(scale)) scale = 1.0;
+            // Let's try a different strategy: Hide only things that are WAY far from the largest mesh.
+            largestMesh.visible = true;
 
-        carModel.scale.setScalar(scale);
+            // Let's create a new clean group to hold ONLY the car parts.
+            // But first, let's just focus on the car.
 
-        // Center model
-        carModel.position.x = -center.x * scale;
-        carModel.position.y = -box.min.y * scale;
-        carModel.position.z = -center.z * scale;
+            // RE-STRATEGY: The car is likely a group of meshes. 
+            // Let's calculate the bounding box of the largest mesh, and any mesh INSIDE that box (or close to it) is kept.
+            // Everything else (far away text) is hidden.
+
+            const carBox = new THREE.Box3().setFromObject(largestMesh);
+            const carCenter = carBox.getCenter(new THREE.Vector3());
+
+            carModel.traverse((child) => {
+                if (child.isMesh) {
+                    const childBox = new THREE.Box3().setFromObject(child);
+                    const childCenter = childBox.getCenter(new THREE.Vector3());
+                    const distance = childCenter.distanceTo(carCenter);
+
+                    // If it's more than 10 meters away from the "main body", hide it.
+                    if (distance > 10) {
+                        child.visible = false;
+                    } else {
+                        child.visible = true;
+                    }
+                }
+            });
+
+            // 4. Center and Scale based on the CLEANED visible determination
+            // We need a box that encapsulates only visible things
+            const finalBox = new THREE.Box3();
+            carModel.traverse((child) => {
+                if (child.isMesh && child.visible) {
+                    finalBox.expandByObject(child);
+                }
+            });
+
+            const size = finalBox.getSize(new THREE.Vector3());
+            const center = finalBox.getCenter(new THREE.Vector3());
+
+            // Normalize scale to approx 4.5 meters
+            const maxDim = Math.max(size.x, size.y, size.z);
+            let scale = 4.5 / maxDim;
+            if (!isFinite(scale)) scale = 1.0;
+
+            carModel.scale.setScalar(scale);
+
+            // Center model: We move the container (carModel) opposite to the center * scale
+            // But since we are scaling the container, we just need to move the container.
+            // Wait, scaling is applied to the children positions if we scale the group.
+            // Let's position the group so the visual center is at 0,0,0
+
+            // To do this simply: move the whole group
+            carModel.position.x = -center.x * scale;
+            carModel.position.y = -finalBox.min.y * scale;
+            carModel.position.z = -center.z * scale;
+
+        } else {
+            console.warn("Could not find a large mesh, using default scaling.");
+        }
 
         scene.add(carModel);
 
-        // Add lights to help visualize better
+        // Add lights
         const dirLight = new THREE.DirectionalLight(0xffffff, 2);
         dirLight.position.set(5, 10, 7);
         dirLight.castShadow = true;
