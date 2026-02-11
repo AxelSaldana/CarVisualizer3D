@@ -68,10 +68,23 @@ function init() {
         console.log("Starting model cleanup...");
 
         carModel.traverse((child) => {
-            // Remove Text nodes
+            // Remove Text nodes (Found Text.023 - Text.039 in inspection)
             if (child.name.match(/Text/i)) {
                 toRemove.push(child);
                 return;
+            }
+
+            // Remove specific known artifacts or shadows if they look bad
+            if (child.name.includes('ground_shadow') || child.name.includes('Plane')) {
+                // Be careful with Planes, some cars use planes for mirrors or windows.
+                // But typically "Plane.XXX" in a messy export are reference images.
+                // Let's hide them if they are far from center? 
+                // Or just hide them if they are not standard car parts.
+                // safe bet: hide 'ground_shadow'
+                if (child.name.includes('ground_shadow')) {
+                    toRemove.push(child);
+                    return;
+                }
             }
 
             // Heuristic: Remove objects that are "floating" too high
@@ -102,7 +115,9 @@ function init() {
         console.log("Model Size:", size);
         console.log("Model Center:", center);
 
-        // If size is zero (empty model), warn
+        // If size is too huge (artifacts expanding box), we might need to recalculate
+        // considering only the "dense" part of the model.
+        // But the previous cleanup should help.
         if (size.lengthSq() === 0) {
             console.error("Model appears to be empty!");
         } else {
@@ -157,33 +172,43 @@ function init() {
 
     window.addEventListener('resize', onWindowResize);
 
-    // Touch Events for Scaling in AR (Pinch to Zoom)
+    // Touch Events: Scaling (2 fingers) and Rotation (1 finger)
     let initialDistance = 0;
     let initialScale = new THREE.Vector3();
+    let previousTouchX = 0;
 
     window.addEventListener('touchstart', (e) => {
+        // Pinch (2 fingers)
         if (e.touches.length === 2 && carModel) {
             const dx = e.touches[0].pageX - e.touches[1].pageX;
             const dy = e.touches[0].pageY - e.touches[1].pageY;
             initialDistance = Math.sqrt(dx * dx + dy * dy);
             initialScale.copy(carModel.scale);
         }
+        // Rotate (1 finger)
+        if (e.touches.length === 1 && carModel) {
+            previousTouchX = e.touches[0].pageX;
+        }
     });
 
     window.addEventListener('touchmove', (e) => {
+        // Pinch (2 fingers)
         if (e.touches.length === 2 && carModel && initialDistance > 0) {
             const dx = e.touches[0].pageX - e.touches[1].pageX;
             const dy = e.touches[0].pageY - e.touches[1].pageY;
             const currentDistance = Math.sqrt(dx * dx + dy * dy);
 
             const scaleFactor = currentDistance / initialDistance;
-
-            // Apply scale (clamp to reasonable limits)
             const newScale = initialScale.clone().multiplyScalar(scaleFactor);
-            // Limit scale between 0.1x (tiny) and 5x (huge) of original logic? 
-            // Better to just clamp scalar to reasonable absolute values, but relative is easier.
-
             carModel.scale.copy(newScale);
+        }
+
+        // Rotate (1 finger)
+        if (e.touches.length === 1 && carModel) {
+            const deltaX = e.touches[0].pageX - previousTouchX;
+            previousTouchX = e.touches[0].pageX;
+            // Rotation speed factor
+            carModel.rotation.y += deltaX * 0.005;
         }
     });
 }
