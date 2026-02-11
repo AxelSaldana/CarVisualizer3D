@@ -59,10 +59,18 @@ function init() {
 
     window.controls = controls; // Expose for loader to update target
 
-    // Load Model (FBX)
-    const loader = new FBXLoader();
+    // Load Model (FBX) with LoadingManager for textures
+    const manager = new THREE.LoadingManager();
+    manager.onLoad = function () {
+        console.log('Loading complete!');
+    };
+
+    const loader = new FBXLoader(manager);
     loader.load('/Modelo/FC-05.fbx', function (object) {
         carModel = object;
+
+        // FBX models are often in centimeters, scale down
+        carModel.scale.setScalar(0.01);
 
         // Clean up model: Remove Text and loose geometry that might be clutter
         const toRemove = [];
@@ -126,7 +134,7 @@ function init() {
             const maxDim = Math.max(size.x, size.y, size.z);
 
             // Position camera at a nice 3/4 angle, slightly elevated
-            const distance = maxDim * 1.2; // Much closer than before
+            const distance = maxDim * 1.5; // Adjusted for better view
 
             camera.position.set(
                 center.x + distance * 0.8, // Offset X
@@ -143,19 +151,32 @@ function init() {
             }
         }
 
-        // Add lights
+        // Add lights - Enhanced for better material visibility
         // Add ambient light for general brightness
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
 
-        // Add lights
-        const dirLight = new THREE.DirectionalLight(0xffffff, 2);
+        // Main directional light
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
         dirLight.position.set(5, 10, 7);
         dirLight.castShadow = true;
         scene.add(dirLight);
 
+        // Fill light from opposite side
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        fillLight.position.set(-5, 5, -5);
+        scene.add(fillLight);
+
         render();
-    });
+    },
+        // Progress callback
+        function (xhr) {
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+        },
+        // Error callback
+        function (error) {
+            console.error('An error happened loading the FBX:', error);
+        });
 
     // AR Reticle (Visual guide for placement)
     reticle = new THREE.Mesh(
