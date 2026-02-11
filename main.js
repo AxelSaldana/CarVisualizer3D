@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { ARButton } from 'three/addons/webxr/ARButton.js';
 
@@ -35,6 +35,7 @@ function init() {
     container.appendChild(renderer.domElement);
 
     // AR Button with DOM Overlay (for touch gestures)
+    // ARButton automatically hides on desktop (no WebXR support)
     document.body.appendChild(ARButton.createButton(renderer, {
         requiredFeatures: ['hit-test'],
         optionalFeatures: ['dom-overlay'],
@@ -58,10 +59,10 @@ function init() {
 
     window.controls = controls; // Expose for loader to update target
 
-    // Load Model
-    const loader = new GLTFLoader();
-    loader.load('/Modelo/scene.gltf', function (gltf) {
-        carModel = gltf.scene;
+    // Load Model (FBX)
+    const loader = new FBXLoader();
+    loader.load('/Modelo/FC-05.fbx', function (object) {
+        carModel = object;
 
         // Clean up model: Remove Text and loose geometry that might be clutter
         const toRemove = [];
