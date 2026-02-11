@@ -20,7 +20,8 @@ function init() {
 
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+    // Increase far plane to ensure we see everything
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000);
 
     const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
     light.position.set(0.5, 1, 0.25);
@@ -33,8 +34,13 @@ function init() {
     renderer.xr.enabled = true; // Enable WebXR
     container.appendChild(renderer.domElement);
 
-    // AR Button
-    document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
+    // AR Button with DOM Overlay (for touch gestures)
+    document.body.appendChild(ARButton.createButton(renderer, {
+        requiredFeatures: ['hit-test'],
+        optionalFeatures: ['dom-overlay'],
+        domOverlay: { root: document.body }
+    }));
+
 
     // Environment for realistic reflections
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -150,6 +156,36 @@ function init() {
     scene.add(controller);
 
     window.addEventListener('resize', onWindowResize);
+
+    // Touch Events for Scaling in AR (Pinch to Zoom)
+    let initialDistance = 0;
+    let initialScale = new THREE.Vector3();
+
+    window.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2 && carModel) {
+            const dx = e.touches[0].pageX - e.touches[1].pageX;
+            const dy = e.touches[0].pageY - e.touches[1].pageY;
+            initialDistance = Math.sqrt(dx * dx + dy * dy);
+            initialScale.copy(carModel.scale);
+        }
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2 && carModel && initialDistance > 0) {
+            const dx = e.touches[0].pageX - e.touches[1].pageX;
+            const dy = e.touches[0].pageY - e.touches[1].pageY;
+            const currentDistance = Math.sqrt(dx * dx + dy * dy);
+
+            const scaleFactor = currentDistance / initialDistance;
+
+            // Apply scale (clamp to reasonable limits)
+            const newScale = initialScale.clone().multiplyScalar(scaleFactor);
+            // Limit scale between 0.1x (tiny) and 5x (huge) of original logic? 
+            // Better to just clamp scalar to reasonable absolute values, but relative is easier.
+
+            carModel.scale.copy(newScale);
+        }
+    });
 }
 
 function onSelect() {
