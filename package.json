@@ -1,0 +1,16 @@
+{
+    "name": "car-visualizer-ar",
+    "version": "1.0.0",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "three": "^0.160.0"
+    },
+    "devDependencies": {
+        "vite": "^4.5.0"
+    },
+    "type": "module"
+}
