@@ -40,117 +40,91 @@ function init() {
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
 
+    scene.background = new THREE.Color(0xdddddd); // Light grey background
+
     // Controls (for non-AR mode)
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.addEventListener('change', render); // use if there is no animation loop
-    controls.minDistance = 2;
-    controls.maxDistance = 10;
-    controls.target.set(0, 0, -0.2);
+    controls.minDistance = 0.1; // Allow closer zoom
+    controls.maxDistance = 1000; // Allow farther zoom
+    controls.target.set(0, 0, 0); // Default target
     controls.update();
+
+    window.controls = controls; // Expose for loader to update target
 
     // Load Model
     const loader = new GLTFLoader();
     loader.load('/Modelo/scene.gltf', function (gltf) {
         carModel = gltf.scene;
 
-        // ADVANCED CLEANUP: Find the largest object (The Car) and hide everything else.
-        let largestMesh = null;
-        let maxVolume = 0;
+        // Clean up model: Remove Text and loose geometry that might be clutter
+        const toRemove = [];
+        console.log("Starting model cleanup...");
 
-        // 1. Calculate bounding boxes for all meshes to find the biggest one
         carModel.traverse((child) => {
+            // Remove Text nodes
+            if (child.name.match(/Text/i)) {
+                toRemove.push(child);
+                return;
+            }
+
+            // Heuristic: Remove objects that are "floating" too high
+            if (child.position.y > 50 || child.position.y < -50) {
+                toRemove.push(child);
+                return;
+            }
+
+            // Enable shadows
             if (child.isMesh) {
-                // Enable shadows while we are at it
                 child.castShadow = true;
                 child.receiveShadow = true;
-
-                // Calculate volume
-                const box = new THREE.Box3().setFromObject(child);
-                const size = box.getSize(new THREE.Vector3());
-                const volume = size.x * size.y * size.z;
-
-                // Ignore huge flat planes (like floors) if any, but usually car is "fat"
-                if (volume > maxVolume) {
-                    maxVolume = volume;
-                    largestMesh = child;
-                }
             }
         });
 
-        if (largestMesh) {
-            console.log("Found largest mesh:", largestMesh.name);
-
-            // 2. Hide everything
-            carModel.traverse((child) => {
-                if (child.isMesh) child.visible = false;
-            });
-
-            // 3. Show only the largest mesh and its children/parents if needed?
-            // Actually, cars are often multiple meshes (wheels + body). 
-            // We probably want to keep the "Group" that contains the largest mesh.
-
-            // Let's try a different strategy: Hide only things that are WAY far from the largest mesh.
-            largestMesh.visible = true;
-
-            // Let's create a new clean group to hold ONLY the car parts.
-            // But first, let's just focus on the car.
-
-            // RE-STRATEGY: The car is likely a group of meshes. 
-            // Let's calculate the bounding box of the largest mesh, and any mesh INSIDE that box (or close to it) is kept.
-            // Everything else (far away text) is hidden.
-
-            const carBox = new THREE.Box3().setFromObject(largestMesh);
-            const carCenter = carBox.getCenter(new THREE.Vector3());
-
-            carModel.traverse((child) => {
-                if (child.isMesh) {
-                    const childBox = new THREE.Box3().setFromObject(child);
-                    const childCenter = childBox.getCenter(new THREE.Vector3());
-                    const distance = childCenter.distanceTo(carCenter);
-
-                    // If it's more than 10 meters away from the "main body", hide it.
-                    if (distance > 10) {
-                        child.visible = false;
-                    } else {
-                        child.visible = true;
-                    }
-                }
-            });
-
-            // 4. Center and Scale based on the CLEANED visible determination
-            // We need a box that encapsulates only visible things
-            const finalBox = new THREE.Box3();
-            carModel.traverse((child) => {
-                if (child.isMesh && child.visible) {
-                    finalBox.expandByObject(child);
-                }
-            });
-
-            const size = finalBox.getSize(new THREE.Vector3());
-            const center = finalBox.getCenter(new THREE.Vector3());
-
-            // Normalize scale to approx 4.5 meters
-            const maxDim = Math.max(size.x, size.y, size.z);
-            let scale = 4.5 / maxDim;
-            if (!isFinite(scale)) scale = 1.0;
-
-            carModel.scale.setScalar(scale);
-
-            // Center model: We move the container (carModel) opposite to the center * scale
-            // But since we are scaling the container, we just need to move the container.
-            // Wait, scaling is applied to the children positions if we scale the group.
-            // Let's position the group so the visual center is at 0,0,0
-
-            // To do this simply: move the whole group
-            carModel.position.x = -center.x * scale;
-            carModel.position.y = -finalBox.min.y * scale;
-            carModel.position.z = -center.z * scale;
-
-        } else {
-            console.warn("Could not find a large mesh, using default scaling.");
-        }
+        console.log("Removing " + toRemove.length + " objects.");
+        toRemove.forEach(child => {
+            if (child.parent) child.parent.remove(child);
+        });
 
         scene.add(carModel);
+
+        // Auto-center and fit camera
+        const box = new THREE.Box3().setFromObject(carModel);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+
+        console.log("Model Size:", size);
+        console.log("Model Center:", center);
+
+        // If size is zero (empty model), warn
+        if (size.lengthSq() === 0) {
+            console.error("Model appears to be empty!");
+        } else {
+            // Fit camera to object (Make it close and personal!)
+            const maxDim = Math.max(size.x, size.y, size.z);
+
+            // Position camera at a nice 3/4 angle, slightly elevated
+            const distance = maxDim * 1.2; // Much closer than before
+
+            camera.position.set(
+                center.x + distance * 0.8, // Offset X
+                center.y + size.y * 0.8,   // Offset Y (slightly up)
+                center.z + distance * 0.8  // Offset Z
+            );
+
+            camera.lookAt(center);
+
+            // Update controls target
+            if (window.controls) {
+                window.controls.target.copy(center);
+                window.controls.update();
+            }
+        }
+
+        // Add lights
+        // Add ambient light for general brightness
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
 
         // Add lights
         const dirLight = new THREE.DirectionalLight(0xffffff, 2);
