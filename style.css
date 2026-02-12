@@ -311,52 +311,77 @@ button[style*="ar"],
 
 /* Responsive */
 @media (max-width: 768px) {
+
+  /* Responsive Adjustments */
   .header {
-    padding: 1.5rem 1.5rem;
+    padding: 1rem 1.5rem;
   }
 
-  .nav {
-    display: none;
-  }
-
+  /* Info */
   .info-overlay {
+    top: 90px;
     left: 1.5rem;
-    top: 100px;
+    max-width: 90%;
   }
 
-  .model-name,
-  .model-variant {
-    font-size: 2.5rem;
-  }
-
-  .specs {
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  .spec-value {
-    font-size: 1.5rem;
-  }
-
-  .description-section {
-    margin-top: 1.5rem;
-  }
-
-  .price-footer {
-    left: 1.5rem;
-    bottom: 2rem;
-  }
-
-  .price-value {
+  .model-name {
     font-size: 2rem;
   }
 
-  .configure-btn {
-    right: 1.5rem;
-    bottom: 2rem;
-    padding: 0.875rem 2rem;
+  .model-variant {
+    font-size: 2rem;
+    margin-bottom: 1rem;
   }
 
+  .specs {
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .spec-value {
+    font-size: 1.25rem;
+  }
+
+  /* Compact description on mobile */
+  .description-section {
+    display: none;
+    /* Hide description on mobile to save space */
+  }
+
+  /* Layout: Stack Price above Buttons */
+  .price-footer {
+    left: 1.5rem;
+    bottom: 5.5rem;
+    /* Move price up */
+    z-index: 20;
+  }
+
+  .price-value {
+    font-size: 1.75rem;
+  }
+
+  /* Action Buttons Full Width */
+  .action-buttons {
+    bottom: 1.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    width: auto;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .configure-btn,
+  .ar-btn {
+    flex: 1;
+    /* Equal width buttons */
+    padding: 0.875rem 0;
+    /* Compact height */
+    text-align: center;
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+
+  /* Hide Desktop Only */
   .desktop-only {
     display: none !important;
   }
@@ -368,5 +393,10 @@ button[style*="ar"],
   /* AR message managed by JS now */
   .ar-message {
     display: none;
+    width: 90%;
+    left: 5%;
+    bottom: 5rem;
+    transform: none;
+    text-align: center;
   }
 }
