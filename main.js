@@ -47,7 +47,8 @@ function init() {
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
 
-    scene.background = new THREE.Color(0xdddddd); // Light grey background
+    // Dark background to match the UI
+    scene.background = new THREE.Color(0x1e293b); // Dark slate background
 
     // Controls (for non-AR mode)
     const controls = new OrbitControls(camera, renderer.domElement);
