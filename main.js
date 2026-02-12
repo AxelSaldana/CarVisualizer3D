@@ -74,17 +74,33 @@ function init() {
 
     window.controls = controls; // Expose for loader to update target
 
-    // Load Model (FBX) with LoadingManager for textures
+    // Load Model (GLTF) with LoadingManager for textures
     const manager = new THREE.LoadingManager();
+
+    // Loading progress
+    const loadingScreen = document.getElementById('loadingScreen');
+    const loadingProgress = document.getElementById('loadingProgress');
+    const loadingPercent = document.getElementById('loadingPercent');
+
+    manager.onProgress = function (url, loaded, total) {
+        const progress = (loaded / total) * 100;
+        loadingProgress.style.width = progress + '%';
+        loadingPercent.textContent = Math.round(progress);
+    };
+
     manager.onLoad = function () {
         console.log('Loading complete!');
+        // Hide loading screen with fade out
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+        }, 500);
     };
 
     const loader = new GLTFLoader(manager);
-    loader.load('/Modelo/scene.gltf', function (gltf) {
+    loader.load('/Modelo/scene-optimized.glb', function (gltf) {
         carModel = gltf.scene;
 
-        // FBX models are often in centimeters, scale down
+        // GLTF models scale
         carModel.scale.setScalar(10);
 
         // Clean up model: Remove Text and loose geometry that might be clutter
@@ -148,13 +164,13 @@ function init() {
             // Fit camera to object (Make it close and personal!)
             const maxDim = Math.max(size.x, size.y, size.z);
 
-            // Position camera at a nice 3/4 angle, slightly elevated
-            const distance = maxDim * 1.5; // Adjusted for better view
+            // Position camera closer for better view (especially on mobile)
+            const distance = maxDim * 0.8; // Closer distance
 
             camera.position.set(
-                center.x + distance * 0.8, // Offset X
-                center.y + size.y * 0.8,   // Offset Y (slightly up)
-                center.z + distance * 0.8  // Offset Z
+                center.x + distance * 0.7, // Offset X
+                center.y + size.y * 0.5,   // Offset Y (slightly up)
+                center.z + distance * 0.7  // Offset Z
             );
 
             camera.lookAt(center);
