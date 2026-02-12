@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { ARButton } from 'three/addons/webxr/ARButton.js';
 
 let camera, scene, renderer;
@@ -44,28 +44,25 @@ function init() {
 
 
 
-    // Load HDR Environment
+    // Dark night environment
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
 
-    // Load HDR file for realistic environment
-    new RGBELoader()
-        .setPath('/')
-        .load('derelict_underpass_4k.hdr', function (texture) {
-            const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+    // Dark background for night aesthetic
+    scene.background = new THREE.Color(0x0a0a0a); // Very dark background
 
-            scene.environment = envMap;
-            scene.background = envMap;
+    // Use RoomEnvironment for subtle lighting
+    const environment = new RoomEnvironment();
+    scene.environment = pmremGenerator.fromScene(environment, 0.02).texture; // Lower intensity for night
 
-            texture.dispose();
-            pmremGenerator.dispose();
+    // Add some ambient light for visibility
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambientLight);
 
-            console.log('HDR environment loaded successfully!');
-        }, undefined, function (error) {
-            console.error('Error loading HDR:', error);
-            // Fallback to dark background if HDR fails
-            scene.background = new THREE.Color(0x1e293b);
-        });
+    // Add a subtle directional light (moonlight effect)
+    const moonLight = new THREE.DirectionalLight(0xb0c4de, 0.5);
+    moonLight.position.set(5, 10, 5);
+    scene.add(moonLight);
 
     // Controls (for non-AR mode)
     const controls = new OrbitControls(camera, renderer.domElement);
