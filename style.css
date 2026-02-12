@@ -232,11 +232,10 @@ canvas {
   z-index: 10;
 }
 
-.configure-btn {
-  padding: 1rem 2.5rem;
-  background: #FFD700;
-  border: none;
-  color: #000000;
+.configure-btn,
+.ar-btn {
+  padding: 1rem 0;
+  /* Consistent vertical padding */
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -244,24 +243,34 @@ canvas {
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s;
+  height: 48px;
+  /* Fixed height for perfect alignment */
+  display: flex;
+  /* Flex to center text */
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  /* Ensure border is included in height */
+}
+
+.configure-btn {
+  background: #FFD700;
+  border: 1px solid #FFD700;
+  /* Add border to match AR button sizing */
+  color: #000000;
 }
 
 .ar-btn {
-  padding: 1rem 2.5rem;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent background */
   border: 1px solid #FFD700;
   color: #FFD700;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s;
+  backdrop-filter: blur(4px);
 }
 
 .configure-btn:hover {
   background: #FFC700;
+  border-color: #FFC700;
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
 }
@@ -269,6 +278,14 @@ canvas {
 .ar-btn:hover {
   background: rgba(255, 215, 0, 0.1);
   transform: translateY(-2px);
+}
+
+/* Exit AR styling (applied via JS) */
+.ar-btn.exit-mode {
+  background: #dc2626 !important;
+  /* Red for exit */
+  border-color: #dc2626 !important;
+  color: white !important;
 }
 
 /* AR Message */
