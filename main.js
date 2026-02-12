@@ -233,6 +233,85 @@ function init() {
             carModel.rotation.y += deltaX * 0.005;
         }
     });
+
+    // Setup UI Controls
+    setupUIControls();
+}
+
+function setupUIControls() {
+    // Color picker
+    const colorBtns = document.querySelectorAll('.color-btn');
+    const colorNameEl = document.querySelector('.color-name');
+
+    const colorNames = {
+        '#2563eb': 'Signature Neon Blue',
+        '#1e293b': 'Midnight Black',
+        '#dc2626': 'Racing Red',
+        '#f59e0b': 'Sunset Orange',
+        '#ffffff': 'Pearl White'
+    };
+
+    colorBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const color = btn.dataset.color;
+
+            // Update active state
+            colorBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update color name
+            colorNameEl.innerHTML = `${colorNames[color]} <span class="included">included</span>`;
+
+            // Change car color
+            if (carModel) {
+                carModel.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        // Only change body materials, not glass/chrome
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach(mat => {
+                                if (mat.color) mat.color.set(color);
+                            });
+                        } else {
+                            if (child.material.color) {
+                                child.material.color.set(color);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    // Rotation buttons
+    const rotateLeft = document.getElementById('rotateLeft');
+    const rotateRight = document.getElementById('rotateRight');
+
+    if (rotateLeft) {
+        rotateLeft.addEventListener('click', () => {
+            if (carModel) {
+                carModel.rotation.y += 0.3;
+            }
+        });
+    }
+
+    if (rotateRight) {
+        rotateRight.addEventListener('click', () => {
+            if (carModel) {
+                carModel.rotation.y -= 0.3;
+            }
+        });
+    }
+
+    // Custom AR button (triggers the hidden ARButton)
+    const arButtonCustom = document.getElementById('arButtonCustom');
+    if (arButtonCustom) {
+        arButtonCustom.addEventListener('click', () => {
+            const arButton = document.querySelector('button[class*="ARButton"]');
+            if (arButton) {
+                arButton.click();
+            }
+        });
+    }
 }
 
 function onSelect() {

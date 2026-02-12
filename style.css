@@ -1,22 +1,333 @@
-body {
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+* {
   margin: 0;
-  overflow: hidden;
-  font-family: sans-serif;
-  background-color: #333;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-#info {
-  position: absolute;
-  top: 10px;
-  width: 100%;
-  text-align: center;
-  color: white;
-  pointer-events: none;
-  font-size: 14px;
-  text-shadow: 1px 1px 2px black;
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 100;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.accent {
+  color: #3b82f6;
+}
+
+.nav {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: color 0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #3b82f6;
+}
+
+/* Canvas Container */
+#app {
+  width: 100%;
+  height: 100vh;
 }
 
 canvas {
   display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Info Overlay */
+.info-overlay {
+  position: fixed;
+  top: 120px;
+  left: 3rem;
+  z-index: 10;
+  max-width: 500px;
+}
+
+.model-name {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.model-subtitle {
+  font-size: 0.875rem;
+  color: #3b82f6;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  margin-bottom: 2rem;
+}
+
+.specs {
+  display: flex;
+  gap: 3rem;
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.spec-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.unit {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.spec-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* Controls Panel */
+.controls-panel {
+  position: fixed;
+  top: 120px;
+  right: 3rem;
+  width: 320px;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  z-index: 10;
+}
+
+.panel-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 8px;
+  padding: 0.25rem;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.75rem;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tab-btn.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.control-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  margin-bottom: 1rem;
+}
+
+.color-picker {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.color-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.color-btn:hover {
+  transform: scale(1.1);
+}
+
+.color-btn.active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.color-name {
+  font-size: 0.875rem;
+  color: #e2e8f0;
+}
+
+.included {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.rotation-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rotation-btn {
+  flex: 1;
+  padding: 0.75rem;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.rotation-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+}
+
+.rotation-btn:active {
+  transform: scale(0.95);
+}
+
+.ar-button-custom {
+  width: 100%;
+  padding: 1rem;
+  background: #3b82f6;
+  border: none;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 1rem;
+}
+
+.ar-button-custom:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+}
+
+/* Price Footer */
+.price-footer {
+  position: fixed;
+  bottom: 2rem;
+  right: 3rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.price-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.price-value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* Hide default AR button */
+button[class*="ARButton"] {
+  display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem 1.5rem;
+  }
+
+  .nav {
+    display: none;
+  }
+
+  .info-overlay {
+    left: 1.5rem;
+    top: 100px;
+  }
+
+  .model-name {
+    font-size: 2rem;
+  }
+
+  .specs {
+    gap: 1.5rem;
+  }
+
+  .spec-value {
+    font-size: 1.5rem;
+  }
+
+  .controls-panel {
+    right: 1.5rem;
+    left: 1.5rem;
+    width: auto;
+    top: auto;
+    bottom: 6rem;
+  }
+
+  .price-footer {
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
 }
