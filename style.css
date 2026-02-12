@@ -305,6 +305,42 @@ button[class*="ARButton"] {
   display: none !important;
 }
 
+/* Desktop/Mobile Visibility */
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* Mobile Toggle Button */
+.mobile-toggle-btn {
+  display: none;
+  position: absolute;
+  top: -50px;
+  right: 0;
+  width: 48px;
+  height: 48px;
+  background: rgba(59, 130, 246, 0.9);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 20;
+}
+
+.mobile-toggle-btn:hover {
+  background: #2563eb;
+  transform: scale(1.1);
+}
+
+.panel-content {
+  display: block;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .header {
@@ -334,10 +370,39 @@ button[class*="ARButton"] {
 
   .controls-panel {
     right: 1.5rem;
-    left: 1.5rem;
+    left: auto;
     width: auto;
     top: auto;
-    bottom: 6rem;
+    bottom: 2rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  .mobile-toggle-btn {
+    display: block;
+  }
+
+  .panel-content {
+    display: none;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .panel-content.active {
+    display: block;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: block !important;
   }
 
   .price-footer {

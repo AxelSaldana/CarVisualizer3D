@@ -43,12 +43,16 @@ function init() {
     }));
 
 
-    // Environment for realistic reflections
-    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
 
-    // Dark background to match the UI
+    // Load HDR Environment
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    pmremGenerator.compileEquirectangularShader();
+
     scene.background = new THREE.Color(0x1e293b); // Dark slate background
+
+    // Temporarily using RoomEnvironment (will add RGBELoader for HDR later)
+    const envScene = new RoomEnvironment();
+    scene.environment = pmremGenerator.fromScene(envScene, 0.04).texture;
 
     // Controls (for non-AR mode)
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -311,6 +315,15 @@ function setupUIControls() {
             if (arButton) {
                 arButton.click();
             }
+        });
+    }
+
+    // Mobile toggle button for description panel
+    const mobileToggle = document.getElementById('mobileToggle');
+    const panelContent = document.getElementById('panelContent');
+    if (mobileToggle && panelContent) {
+        mobileToggle.addEventListener('click', () => {
+            panelContent.classList.toggle('active');
         });
     }
 }

@@ -26,51 +26,59 @@
 
     <!-- Info Overlay -->
     <div class="info-overlay">
-        <h1 class="model-name">RENAULT ESPACE</h1>
-        <p class="model-subtitle">PERFORMANCE SUV EDITION</p>
+        <h1 class="model-name">LAMBORGHINI AVENTADOR</h1>
+        <p class="model-subtitle">ULTIMATE PERFORMANCE EDITION</p>
 
         <div class="specs">
             <div class="spec-item">
-                <div class="spec-value">2.1s</div>
+                <div class="spec-value">2.9s</div>
                 <div class="spec-label">0-60 MPH</div>
             </div>
             <div class="spec-item">
-                <div class="spec-value">420<span class="unit">mi</span></div>
-                <div class="spec-label">RANGE</div>
+                <div class="spec-value">217<span class="unit">mph</span></div>
+                <div class="spec-label">TOP SPEED</div>
             </div>
             <div class="spec-item">
-                <div class="spec-value">185<span class="unit">mph</span></div>
-                <div class="spec-label">TOP SPEED</div>
+                <div class="spec-value">770<span class="unit">hp</span></div>
+                <div class="spec-label">POWER</div>
             </div>
         </div>
     </div>
 
     <!-- Controls Panel -->
     <div class="controls-panel">
-        <div class="panel-tabs">
-            <button class="tab-btn active" data-tab="exterior">EXTERIOR</button>
-            <button class="tab-btn" data-tab="interior">INTERIOR</button>
-        </div>
-
-        <div class="control-section">
-            <h3 class="section-title">DESCRIPTION</h3>
-            <p class="description-text">
-                Experience the future of automotive design with this stunning vehicle.
-                Featuring cutting-edge technology and premium craftsmanship.
-            </p>
-        </div>
-
-        <div class="control-section">
-            <h3 class="section-title">ROTATION</h3>
-            <div class="rotation-controls">
-                <button class="rotation-btn" id="rotateLeft">← LEFT</button>
-                <button class="rotation-btn" id="rotateRight">RIGHT →</button>
-            </div>
-        </div>
-
-        <button class="ar-button-custom" id="arButtonCustom">
-            🎯 ENTER AR MODE
+        <!-- Mobile Toggle Button -->
+        <button class="mobile-toggle-btn" id="mobileToggle">
+            <span>ℹ️</span>
         </button>
+
+        <div class="panel-content" id="panelContent">
+            <div class="panel-tabs desktop-only">
+                <button class="tab-btn active" data-tab="exterior">EXTERIOR</button>
+                <button class="tab-btn" data-tab="interior">INTERIOR</button>
+            </div>
+
+            <div class="control-section">
+                <h3 class="section-title">DESCRIPTION</h3>
+                <p class="description-text">
+                    The Lamborghini Aventador represents the pinnacle of Italian supercar engineering.
+                    With its naturally aspirated V12 engine and cutting-edge aerodynamics, it delivers
+                    an unparalleled driving experience.
+                </p>
+            </div>
+
+            <div class="control-section desktop-only">
+                <h3 class="section-title">ROTATION</h3>
+                <div class="rotation-controls">
+                    <button class="rotation-btn" id="rotateLeft">← LEFT</button>
+                    <button class="rotation-btn" id="rotateRight">RIGHT →</button>
+                </div>
+            </div>
+
+            <button class="ar-button-custom mobile-only" id="arButtonCustom">
+                🎯 ENTER AR MODE
+            </button>
+        </div>
     </div>
 
     <!-- Price Footer -->
