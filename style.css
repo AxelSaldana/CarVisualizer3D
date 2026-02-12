@@ -223,10 +223,16 @@ canvas {
 }
 
 /* Configure Button */
-.configure-btn {
+.action-buttons {
   position: fixed;
   bottom: 3rem;
   right: 3rem;
+  display: flex;
+  gap: 1rem;
+  z-index: 10;
+}
+
+.configure-btn {
   padding: 1rem 2.5rem;
   background: #FFD700;
   border: none;
@@ -238,13 +244,31 @@ canvas {
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s;
-  z-index: 10;
+}
+
+.ar-btn {
+  padding: 1rem 2.5rem;
+  background: transparent;
+  border: 1px solid #FFD700;
+  color: #FFD700;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 .configure-btn:hover {
   background: #FFC700;
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+}
+
+.ar-btn:hover {
+  background: rgba(255, 215, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 /* AR Message */
@@ -341,7 +365,8 @@ button[style*="ar"],
     display: block !important;
   }
 
+  /* AR message managed by JS now */
   .ar-message {
-    display: block;
+    display: none;
   }
 }

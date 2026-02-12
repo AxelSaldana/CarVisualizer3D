@@ -360,6 +360,41 @@ function setupUIControls() {
             panelContent.classList.toggle('active');
         });
     }
+
+    // AR Support Check & Button Logic
+    if ('xr' in navigator) {
+        navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+            const arBtn = document.getElementById('arBtn');
+            const arMessage = document.getElementById('arMessage');
+
+            if (supported) {
+                // AR is supported! Show button, hide message
+                if (arBtn) {
+                    arBtn.style.display = 'block';
+                    arBtn.addEventListener('click', () => {
+                        // Find and click the hidden three.js ARButton
+                        const defaultArBtn = document.getElementById('ARButton');
+                        if (defaultArBtn) {
+                            defaultArBtn.click();
+                        } else {
+                            console.error("Default ARButton not found");
+                        }
+                    });
+                }
+                if (arMessage) arMessage.style.display = 'none';
+            } else {
+                // AR not supported. Hide button, show message (on mobile via CSS media query)
+                if (arBtn) arBtn.style.display = 'none';
+                if (arMessage) arMessage.style.display = 'block';
+            }
+        });
+    } else {
+        // WebXR not available at all
+        const arBtn = document.getElementById('arBtn');
+        const arMessage = document.getElementById('arMessage');
+        if (arBtn) arBtn.style.display = 'none';
+        if (arMessage) arMessage.style.display = 'block';
+    }
 }
 
 function onSelect() {
