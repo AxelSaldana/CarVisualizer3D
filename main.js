@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { ARButton } from 'three/addons/webxr/ARButton.js';
 
@@ -66,9 +66,9 @@ function init() {
         console.log('Loading complete!');
     };
 
-    const loader = new FBXLoader(manager);
-    loader.load('/Modelo/FC-05.fbx', function (object) {
-        carModel = object;
+    const loader = new GLTFLoader(manager);
+    loader.load('/Modelo/scene.gltf', function (gltf) {
+        carModel = gltf.scene;
 
         // FBX models are often in centimeters, scale down
         carModel.scale.setScalar(0.01);
