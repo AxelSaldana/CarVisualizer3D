@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { ARButton } from 'three/addons/webxr/ARButton.js';
 
@@ -96,7 +97,14 @@ function init() {
         }, 500);
     };
 
+    // Setup DRACOLoader for compressed models
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+    dracoLoader.setDecoderConfig({ type: 'js' });
+
     const loader = new GLTFLoader(manager);
+    loader.setDRACOLoader(dracoLoader);
+
     loader.load('/Modelo/scene-optimized.glb', function (gltf) {
         carModel = gltf.scene;
 
