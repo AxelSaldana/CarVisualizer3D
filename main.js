@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { ARButton } from 'three/addons/webxr/ARButton.js';
 
 let camera, scene, renderer;
@@ -48,11 +48,24 @@ function init() {
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
 
-    scene.background = new THREE.Color(0x1e293b); // Dark slate background
+    // Load HDR file for realistic environment
+    new RGBELoader()
+        .setPath('/')
+        .load('autoshop_01_4k.hdr', function (texture) {
+            const envMap = pmremGenerator.fromEquirectangular(texture).texture;
 
-    // Temporarily using RoomEnvironment (will add RGBELoader for HDR later)
-    const envScene = new RoomEnvironment();
-    scene.environment = pmremGenerator.fromScene(envScene, 0.04).texture;
+            scene.environment = envMap;
+            scene.background = envMap;
+
+            texture.dispose();
+            pmremGenerator.dispose();
+
+            console.log('HDR environment loaded successfully!');
+        }, undefined, function (error) {
+            console.error('Error loading HDR:', error);
+            // Fallback to dark background if HDR fails
+            scene.background = new THREE.Color(0x1e293b);
+        });
 
     // Controls (for non-AR mode)
     const controls = new OrbitControls(camera, renderer.domElement);
