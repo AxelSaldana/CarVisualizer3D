@@ -16,7 +16,6 @@
         </div>
         <nav class="nav">
             <a href="#" class="nav-link">MODELS</a>
-            <a href="#" class="nav-link active">CONFIGURE</a>
         </nav>
     </header>
 
@@ -25,48 +24,44 @@
 
     <!-- Info Overlay -->
     <div class="info-overlay">
-        <h1 class="model-name">LAMBORGHINI AVENTADOR</h1>
-        <p class="model-subtitle">ULTIMATE PERFORMANCE EDITION</p>
+        <h1 class="model-name">AVENTADOR</h1>
+        <h2 class="model-variant">SVJ</h2>
 
         <div class="specs">
             <div class="spec-item">
-                <div class="spec-value">2.9s</div>
-                <div class="spec-label">0-60 MPH</div>
+                <div class="spec-value">2.8</div>
+                <div class="spec-label">0-100 KM/H</div>
             </div>
             <div class="spec-item">
-                <div class="spec-value">217<span class="unit">mph</span></div>
+                <div class="spec-value">357</div>
                 <div class="spec-label">TOP SPEED</div>
             </div>
             <div class="spec-item">
-                <div class="spec-value">770<span class="unit">hp</span></div>
-                <div class="spec-label">POWER</div>
+                <div class="spec-value">770</div>
+                <div class="spec-label">HORSEPOWER</div>
             </div>
         </div>
-    </div>
 
-    <!-- Controls Panel -->
-    <div class="controls-panel">
-        <!-- Mobile Toggle Button -->
-        <button class="mobile-toggle-btn" id="mobileToggle">
-            <span>ℹ️</span>
-        </button>
-
-        <div class="panel-content" id="panelContent">
-            <div class="control-section">
-                <h3 class="section-title">DESCRIPTION</h3>
-                <p class="description-text">
-                    The Lamborghini Aventador represents the pinnacle of Italian supercar engineering.
-                    With its naturally aspirated V12 engine and cutting-edge aerodynamics, it delivers
-                    an unparalleled driving experience.
-                </p>
-            </div>
+        <div class="description-section">
+            <h3 class="description-title">DESCRIPTION</h3>
+            <p class="description-text">
+                The Lamborghini Aventador SVJ represents the pinnacle of Italian supercar engineering.
+            </p>
         </div>
     </div>
 
     <!-- Price Footer -->
     <div class="price-footer">
-        <div class="price-label">BASE EST.</div>
-        <div class="price-value">$124,800</div>
+        <div class="price-label">STARTING AT</div>
+        <div class="price-value">517,770</div>
+    </div>
+
+    <!-- Configure Button -->
+    <button class="configure-btn" id="configureBtn">CONFIGURE</button>
+
+    <!-- AR Not Supported Message (Mobile Only) -->
+    <div class="ar-message mobile-only">
+        <span>⚠️ AR NOT SUPPORTED</span>
     </div>
 
     <script type="module" src="./main.js"></script>
