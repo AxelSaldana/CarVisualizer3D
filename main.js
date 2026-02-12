@@ -51,7 +51,7 @@ function init() {
     // Load HDR file for realistic environment
     new RGBELoader()
         .setPath('/')
-        .load('autoshop_01_4k.hdr', function (texture) {
+        .load('derelict_underpass_4k.hdr', function (texture) {
             const envMap = pmremGenerator.fromEquirectangular(texture).texture;
 
             scene.environment = envMap;
@@ -88,7 +88,7 @@ function init() {
         carModel = gltf.scene;
 
         // FBX models are often in centimeters, scale down
-        carModel.scale.setScalar(0.01);
+        carModel.scale.setScalar(10);
 
         // Clean up model: Remove Text and loose geometry that might be clutter
         const toRemove = [];
